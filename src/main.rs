@@ -2,6 +2,7 @@ use std::io;
 use std::io::Read;
 use std::fs;
 use std::path::PathBuf;
+// use std::ffi::OsStr;
 use std::process::{Child, Command};
 
 fn launch_emacs_server() -> io::Result<Child> {
@@ -17,9 +18,23 @@ fn launch_emacs_client() -> io::Result<Child> {
 }
 
 
-fn add_cmdline(mut path: PathBuf) -> PathBuf {
+fn add_cmdline_to_path(mut path: PathBuf) -> PathBuf {
     path.push("cmdline");
     path
+}
+
+fn is_file_name_an_int(path: &PathBuf) -> Option<bool> {
+    let file_name = match path.file_name() {
+        Some(name) => name,
+        None => return None,
+    };
+
+    let str_file_name = match file_name.to_str() {
+        Some(name) => name,
+        None => return None,
+    };
+
+    Some(str_file_name.parse::<i32>().is_ok())
 }
 
 fn get_cmdlines_paths() -> io::Result<Vec<PathBuf>> {
@@ -27,8 +42,8 @@ fn get_cmdlines_paths() -> io::Result<Vec<PathBuf>> {
         .filter(|res| res.is_ok())
         .map(|res| res.unwrap().path())
         .filter(|path| path.is_dir())
-        .filter(|path| path.file_name().unwrap().to_str().unwrap().parse::<i32>().is_ok())
-        .map(add_cmdline)
+        .filter(|path| is_file_name_an_int(path).unwrap_or(false))
+        .map(add_cmdline_to_path)
         .collect();
     Ok(paths)
 }
@@ -38,8 +53,8 @@ fn is_emacs_running(paths: Vec<PathBuf>) -> io::Result<bool> {
 
     for path in paths {
         let mut file = try!(fs::File::open(path));
-        let mut content = String::new();
 
+        let mut content = String::new();
         try!(file.read_to_string(& mut content));
         content.trim();
 
