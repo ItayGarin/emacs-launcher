@@ -1,6 +1,6 @@
 # emacs-launcher
 
-Launch Emacs the Smart Way
+*Launch Emacs the Smart Way*
 
-This is a simple command-line program that checks whether or not Emacs is running
-and either launches a new server or creates a new client.
+This command-line program launches a new Emacs client or server.  
+It checks whether or not an Emacs server is already running to make the decision.
