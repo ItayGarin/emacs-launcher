@@ -2,7 +2,6 @@ use std::io;
 use std::io::Read;
 use std::fs;
 use std::path::PathBuf;
-// use std::ffi::OsStr;
 use std::process::{Child, Command};
 
 fn launch_emacs_server() -> io::Result<Child> {
